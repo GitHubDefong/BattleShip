@@ -7,6 +7,7 @@ App::App()
 	GameApp = new BattleShip();
 	shift[0] = 3;
 	shift[1] = 33;
+	pause = false;
 }
 
 App::~App()
@@ -67,7 +68,7 @@ void App::Update()
 	bool AIhitting = false; // Got or not (If so, then look for "the rest of the ship")
 	COORD AIhittingPos = { 0 , 0 }; // Coordinates of the hit
 	// bool AIchangeShotDirection = true; // Missing after hitting == changing direction from the previous point
-	vector<COORD> AIpreviousÐits; // Collection of previous shots
+	vector<COORD> AIpreviousÐ its; // Collection of previous shots
 	// int AIshipsAnalysis[4] = { 4, 3, 2, 1 }; //	Analysis of the remaining ships from the enemy is necessary to prevent the search for the remaining parts of the ship, which can no longer be (for example, if a ship of 4 cells has already been destroyed)
 
 	bool GameOver = false;
@@ -92,10 +93,16 @@ void App::Update()
 			while (true)
 			{				
 				c[0] = getch();
-				if (kbhit)
+				if (c[0] == VK_SPACE) Pause();
+				else if (kbhit)
 				{
 					break;
-				}	
+				}
+			}
+			if (pause)
+			{
+				pause = false;
+				continue;
 			}
 			 
 			if (atoi(&c[0]) >= 0 && atoi(&c[0]) < 10)
@@ -107,10 +114,16 @@ void App::Update()
 				while (true)
 				{
 					c[1] = getch();
-					if (kbhit)
+					if (c[1] == VK_SPACE) Pause();
+					else if (kbhit)
 					{
 						break;
 					}
+				}
+				if (pause)
+				{
+					pause = false;
+					continue;
 				}
 				
 				if (c[1] == 'A' || c[1] == 'a') c[1] = 0;
@@ -164,8 +177,8 @@ void App::Update()
 							AIShotPos.X = rand() % 10;
 							AIShotPos.Y = (rand() % 10) + 1;
 							
-							for (size_t i = 0; i < AIpreviousÐits.size(); i++) // Check if the position matches the previous shots
-								if (AIpreviousÐits[i].X == AIShotPos.X && AIpreviousÐits[i].Y == AIShotPos.Y)
+							for (size_t i = 0; i < AIpreviousÐ its.size(); i++) // Check if the position matches the previous shots
+								if (AIpreviousÐ its[i].X == AIShotPos.X && AIpreviousÐ its[i].Y == AIShotPos.Y)
 								{
 									tempCheck = false;
 									break;
@@ -181,7 +194,7 @@ void App::Update()
 						// ...
 					}
 
-					AIpreviousÐits.push_back(AIShotPos);
+					AIpreviousÐ its.push_back(AIShotPos);
 					tempPos.X = shift[0] + AIShotPos.X;
 					tempPos.Y = AIShotPos.Y;
 					SetConsoleCursorPosition(hConsole, tempPos);
@@ -267,5 +280,55 @@ void App::Update()
 			SetConsoleCursorPosition(hConsole, tempPos);
 			break;
 		}
+	}
+}
+
+void App::Pause()
+{
+	pause = true;
+
+	COORD tempPos;
+	tempPos.X = shift[1] + 20;
+	tempPos.Y = 12;
+	SetConsoleCursorPosition(hConsole, tempPos);
+	cout << "                  Press ESC to resume                                   ";
+	SetConsoleCursorPosition(hConsole, tempPos);
+	cout << "Pause: ";
+
+	unsigned short h = 0;
+	unsigned short m = 0;
+	unsigned short s = 0;
+
+	tempPos.X += 6;
+	while (true)
+	{
+		if (kbhit && s != 0)
+		{
+			if (GetAsyncKeyState(VK_ESCAPE))
+			{
+				SetConsoleCursorPosition(hConsole, tempPos);
+				cout << "                                                    ";
+				break;
+			}
+		}
+	
+		if (s == 60)
+		{
+			s = 0;
+			m++;
+			if (m == 60)
+			{
+				m = 0;
+				h++;
+			}
+		}
+		
+		SetConsoleCursorPosition(hConsole, tempPos);
+		cout << "           ";
+		SetConsoleCursorPosition(hConsole, tempPos);
+		cout << h << ":" << m << ":" << s;
+		
+		Sleep(1000);
+		s++;
 	}
 }
