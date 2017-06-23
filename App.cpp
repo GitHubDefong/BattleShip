@@ -105,7 +105,7 @@ void App::Update()
 				continue;
 			}
 			 
-			if (atoi(&c[0]) >= 0 && atoi(&c[0]) < 10)
+			if (atoi(&c[0]) > 0 && atoi(&c[0]) < 10 || c[0] == '0')
 			{				
 				tempPos.Y = 12;
 				SetConsoleCursorPosition(hConsole, tempPos);
@@ -219,13 +219,13 @@ void App::Update()
 				}
 				else
 				{
-					cout << "Error! Invalid character! 1";
+					cout << "Error! Invalid character!";
 					Sleep(1000);
 				}
 			}
 			else
 			{
-				cout << "Error! Invalid character! 2";
+				cout << "Error! Invalid character!";
 				Sleep(1000);
 			}
 			if (GameOver) break;
